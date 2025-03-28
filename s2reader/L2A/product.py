@@ -1,12 +1,18 @@
 from s2reader.L2A.metadata import Metadata
-from s2reader.L2A.band     import BandReader
+from s2reader.L2A.readers  import ReflectanceReader, ClassificationReader, AtmosphericReader
 
 from pathlib import Path
+import re
+import xarray as xr
 
-class L2AProduct(BandReader):
+class L2AProduct:
     
     """ Sentinel-2 Level 2A Product Reader 
     """
+    
+    _READERS = [ReflectanceReader,
+                ClassificationReader,
+                AtmosphericReader]
     
     def __init__(self, safe_path:str=None, target_resolution:int=None) -> None:
 
@@ -23,14 +29,60 @@ class L2AProduct(BandReader):
 
         # Empty DataArray
         self.da = None
-
-
-    def read(self, *args):
         
-        for arg in args:
-            if   arg in self.ALL_BAND:
-                res = self.read_band(arg)
-            elif arg in self.GEO_BAND:
-                res = self.read_geometry(arg)
-            else:
-                raise Exception(f'{arg} not recognised')
+        # Empty GeoDataFrame (store footprint, etc.)
+        self.vec = None
+        
+        self._check_duplicate_tags()
+
+
+    def read(self, *tags):
+        
+        for tag in tags:
+            
+            for reader in self._READERS:
+                
+                if tag in reader._PATTERNS:
+                    
+                    reader(self).read(tag)
+
+    def is_compatible(self, tag: str, patterns: list):
+        """Check if the target string matches any string or regex pattern in the list."""
+        for pattern in patterns:
+            if tag == pattern or re.fullmatch(pattern, tag):
+                return True
+        return False
+    
+    
+    def update(self, vec=None, da=None):
+        
+        if (vec is None) and (da is None):
+            raise Exception('No data to add')
+        
+        # Add the band data to the DataArray
+        if self.da is None:
+            self.da = da
+        else:
+            # If data already exists and we want to add a new band
+            self.da = xr.concat([self.da, da], dim='band')
+            
+            
+    def _check_duplicate_tags(self):
+        """Check for duplicate tags across readers and raise an error if found."""
+        
+        # Collect all tags from readers
+        tag_to_readers = {}
+        
+        for reader in self._READERS:
+            for tag in reader._PATTERNS:
+                if tag in tag_to_readers:
+                    tag_to_readers[tag].append(reader.__module__)
+                else:
+                    tag_to_readers[tag] = [reader.__module__]
+        
+        # Identify duplicates
+        duplicates = {tag: readers for tag, readers in tag_to_readers.items() if len(readers) > 1}
+        
+        if duplicates:
+            duplicate_messages = [f"Tag '{tag}' is used by {', '.join(readers)}" for tag, readers in duplicates.items()]
+            raise ValueError("Duplicate tags found:\n" + "\n".join(duplicate_messages))
