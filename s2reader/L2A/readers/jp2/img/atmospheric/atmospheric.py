@@ -13,7 +13,7 @@ class AtmosphericReader(IMGReader):
         quant  = self.product.meta.get_band_quantification(tag)
         band_data = band_data / quant
         
-        self.product.update(da=band_data)
+        return band_data
         
         
         

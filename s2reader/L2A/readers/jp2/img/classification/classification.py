@@ -10,7 +10,7 @@ class ClassificationReader(IMGReader):
         
         band_data = self.read_jp2(tag, image_path)
 
-        self.product.update(da=band_data)
+        return band_data
         
         
         

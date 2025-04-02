@@ -11,9 +11,9 @@ class Metadata:
     def __init__(self, product_path:Path) -> None:
         
         # Load the product and tile metadata files, and generate the band table
-        self.product   = self._read_product_metadata(product_path)
-        self.tile      = self._read_tile_metadata(product_path)
-        self.bands = self._create_band_table()
+        self.product = self._read_product_metadata(product_path)
+        self.tile    = self._read_tile_metadata(product_path)
+        self.bands   = self._create_band_table()
 
 
     def get_band_offset(self, band_tag: str) -> float:
@@ -60,6 +60,7 @@ class Metadata:
         data = []
 
         for band in self.product.findall(".//Spectral_Information"):
+            
             # Extract band information
             band_id = band.attrib["bandId"]
             physical_band = band.attrib["physicalBand"]

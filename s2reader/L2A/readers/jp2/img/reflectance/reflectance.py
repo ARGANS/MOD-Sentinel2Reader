@@ -1,7 +1,5 @@
 from s2reader.L2A.readers.jp2.img.img import IMGReader
 
-import xarray as xr
-
 class ReflectanceReader(IMGReader):
     
     _PATTERNS = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B09', 'B10', 'B11', 'B12']
@@ -18,7 +16,8 @@ class ReflectanceReader(IMGReader):
         band_data = band_data + offset
         band_data = band_data / quant
         
-        self.product.update(da=band_data)
+        # Push result array to the parent DataArray
+        return band_data
         
         
         
