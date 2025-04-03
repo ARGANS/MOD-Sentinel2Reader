@@ -10,10 +10,10 @@ L2A_PROD.meta.product    # ./MTD_MSIL2A.xml
 L2A_PROD.meta.tile       # ./GRANULE/<TILE>/MTD_TL.xml
 L2A_PROD.meta.bands      # Spectral Band Information (from metadata)
 
-# Access the raster datacube (as xr.DataArray)
+# Access the raster data (as xr.DataArray)
 L2A_PROD.da
 
-# Access the vector dataframe for footprint etc. (as gpd.GeoDataFrame)
+# Access the vector data (as gpd.GeoDataFrame)
 L2A_PROD.gdf
 
 # Read in B01, B02, Scene Classification and Water Vapour bands in a single xr.DataArray, masked to the SCL

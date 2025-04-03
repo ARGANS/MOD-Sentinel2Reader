@@ -1,0 +1,13 @@
+[project]
+name = "sentinel2reader"
+version = "0.1.0"
+description = "Module to read Sentinel-2 data."
+readme = "README.md"
+requires-python = "==3.11.9"
+dependencies = [
+    'xarray==2024.6.0',
+    'rioxarray==0.16.0',
+    'pandas==2.2.2',
+    'numpy==2.0.0',
+    'geopandas==1.0.1'
+]
