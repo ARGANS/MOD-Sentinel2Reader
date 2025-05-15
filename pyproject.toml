@@ -1,5 +1,5 @@
 [project]
-name = "s2reader"
+name = "mod-sentinel2reader"
 version = "0.1.0"
 description = "Module to read Sentinel-2 data."
 readme = "README.md"
